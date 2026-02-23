@@ -116,7 +116,7 @@ class _BluetoothPrinterSettingsState extends State<BluetoothPrinterSettingsWidge
           if (_savedName.isNotEmpty) ...[
             ListTile(
               title: Text(L10().bluetoothPrinterTestPrint),
-              leading: Icon(TablerIcons.printer_search),
+              leading: Icon(TablerIcons.printer),
               onTap: _testPrint,
             ),
             ListTile(
