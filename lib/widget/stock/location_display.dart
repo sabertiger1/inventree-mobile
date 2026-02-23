@@ -18,6 +18,9 @@ import "package:inventree/widget/refreshable_state.dart";
 import "package:inventree/widget/snacks.dart";
 import "package:inventree/widget/stock/stock_list.dart";
 import "package:inventree/labels.dart";
+import "package:esc_pos_bluetooth_updated/esc_pos_bluetooth_updated.dart";
+import "package:inventree/bluetooth_printer/bluetooth_printer_service.dart";
+import "package:inventree/bluetooth_printer/esc_pos_label.dart";
 
 /*
  * Widget for displaying detail view for a single StockLocation instance
@@ -188,6 +191,36 @@ class _LocationDisplayState extends RefreshableState<LocationDisplayWidget> {
           label: L10().printLabel,
           onTap: () async {
             selectAndPrintLabel(context, "stocklocation", widget.location!.pk);
+          },
+        ),
+      );
+    }
+    if (widget.location != null) {
+      actions.add(
+        SpeedDialChild(
+          child: Icon(TablerIcons.printer),
+          label: L10().printToBluetooth,
+          onTap: () async {
+            if (!BluetoothPrinterService.instance.isConnected) {
+              showSnackIcon(L10().bluetoothPrinterSelectFirst, success: false);
+              return;
+            }
+            try {
+              showSnackIcon(L10().downloading, success: true);
+              final bytes = await EscPosLabelBuilder.buildLocationLabel(
+                locationName: widget.location!.getString("name"),
+                barcode: widget.location!.customBarcode.isNotEmpty
+                    ? widget.location!.customBarcode
+                    : "stocklocation-${widget.location!.pk}",
+              );
+              final result = await BluetoothPrinterService.instance.printBytes(bytes);
+              showSnackIcon(
+                result == PosPrintResult.success ? L10().printLabelSuccess : L10().printLabelFailure,
+                success: result == PosPrintResult.success,
+              );
+            } catch (_) {
+              showSnackIcon(L10().printLabelFailure, success: false);
+            }
           },
         ),
       );

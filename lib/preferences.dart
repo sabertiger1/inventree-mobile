@@ -31,6 +31,10 @@ const String INV_LABEL_DEFAULT_TEMPLATES = "defaultLabelTemplates";
 const String INV_LABEL_DEFAULT_PRINTER = "defaultLabelPrinter";
 const String INV_LABEL_DEFAULT_PLUGIN = "defaultLabelPlugin";
 
+// Bluetooth ESC/POS printer (device address and name for display)
+const String INV_BLUETOOTH_PRINTER_ADDRESS = "bluetoothPrinterAddress";
+const String INV_BLUETOOTH_PRINTER_NAME = "bluetoothPrinterName";
+
 // Part settings
 const String INV_PART_SHOW_BOM = "partShowBom";
 const String INV_PART_SHOW_PRICING = "partShowPricing";
