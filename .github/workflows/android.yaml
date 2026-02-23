@@ -54,10 +54,11 @@ jobs:
         dart pub global activate fvm
         fvm install
         fvm flutter pub get
-        fvm flutter build apk --release --no-tree-shake-icons
+        fvm flutter build apk --debug
+      # 使用 debug 构建，避免 CI 上缺少 release 签名 (storeFile)
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: inventree-android-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+        path: build/app/outputs/flutter-apk/app-debug.apk
