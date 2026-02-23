@@ -6,9 +6,12 @@ on:
   pull_request:
     branches:
       - master
+      - main
   push:
     branches:
       - master
+      - main
+  workflow_dispatch:  # 允许在 GitHub 网页上手动触发
   
 jobs:
 
@@ -56,4 +59,10 @@ jobs:
         dart pub global activate fvm
         fvm install
         fvm flutter pub get
-        fvm flutter build apk --debug
+        fvm flutter build apk --release --no-tree-shake-icons
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: inventree-android-apk
+        path: build/app/outputs/flutter-apk/app-release.apk

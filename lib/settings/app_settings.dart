@@ -86,6 +86,14 @@ class _InvenTreeAppSettingsState extends State<InvenTreeAppSettingsWidget> {
     }
   }
 
+  /// 返回语言的友好显示名称，优先使用中文名称（简体中文/繁體中文）
+  static String _localeDisplayName(BuildContext context, Locale locale) {
+    final String tag = locale.toString();
+    if (tag == "zh_CN") return "简体中文";
+    if (tag == "zh_TW") return "繁體中文";
+    return LocaleNames.of(context)!.nameOf(tag) ?? tag;
+  }
+
   Future<void> _selectLocale(BuildContext context) async {
     List<Map<String, dynamic>> options = [
       {"display_name": L10().languageDefault, "value": null},
@@ -94,7 +102,7 @@ class _InvenTreeAppSettingsState extends State<InvenTreeAppSettingsWidget> {
     // Construct a list of available locales
     for (var locale in supported_locales) {
       options.add({
-        "display_name": LocaleNames.of(context)!.nameOf(locale.toString()),
+        "display_name": _localeDisplayName(context, locale),
         "value": locale.toString(),
       });
     }
@@ -145,8 +153,7 @@ class _InvenTreeAppSettingsState extends State<InvenTreeAppSettingsWidget> {
 
     if (locale != null) {
       languageName =
-          LocaleNames.of(context)!.nameOf(locale.toString()) ??
-          L10().languageDefault;
+          _localeDisplayName(context, locale);
     }
 
     IconData orientationIcon = Icons.screen_rotation;
