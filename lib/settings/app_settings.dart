@@ -150,10 +150,9 @@ class _InvenTreeAppSettingsState extends State<InvenTreeAppSettingsWidget> {
   @override
   Widget build(BuildContext context) {
     String languageName = L10().languageDefault;
-
-    if (locale != null) {
-      languageName =
-          _localeDisplayName(context, locale);
+    final Locale? currentLocale = locale;
+    if (currentLocale != null) {
+      languageName = _localeDisplayName(context, currentLocale);
     }
 
     IconData orientationIcon = Icons.screen_rotation;
