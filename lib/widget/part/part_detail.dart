@@ -14,6 +14,8 @@ import "package:inventree/inventree/part.dart";
 import "package:inventree/inventree/stock.dart";
 import "package:inventree/labels.dart";
 import "package:inventree/preferences.dart";
+import "package:inventree/bluetooth_printer/bluetooth_printer_service.dart";
+import "package:inventree/bluetooth_printer/esc_pos_label.dart";
 
 import "package:inventree/widget/attachment_widget.dart";
 import "package:inventree/widget/link_icon.dart";
@@ -132,6 +134,34 @@ class _PartDisplayState extends RefreshableState<PartDetailWidget> {
         ),
       );
     }
+    actions.add(
+      SpeedDialChild(
+        child: Icon(TablerIcons.printer),
+        label: L10().printToBluetooth,
+        onTap: () async {
+          final svc = BluetoothPrinterService.instance;
+          await svc.ensureConnected();
+          if (!svc.isConnected) {
+            showSnackIcon(L10().bluetoothPrinterSelectFirst, success: false);
+            return;
+          }
+          try {
+            showSnackIcon(L10().downloading, success: true);
+            final bytes = await EscPosLabelBuilder.buildLabel(
+              title: widget.part.fullname,
+              lines: [widget.part.IPN],
+              barcode: widget.part.customBarcode.isNotEmpty
+                  ? widget.part.customBarcode
+                  : "part-${widget.part.pk}",
+            );
+            await svc.writeBytes(bytes);
+            showSnackIcon(L10().printLabelSuccess, success: true);
+          } catch (_) {
+            showSnackIcon(L10().printLabelFailure, success: false);
+          }
+        },
+      ),
+    );
     return actions;
   }
 

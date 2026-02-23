@@ -16,6 +16,8 @@ import "package:inventree/widget/link_icon.dart";
 import "package:inventree/widget/progress.dart";
 import "package:inventree/widget/refreshable_state.dart";
 import "package:inventree/widget/snacks.dart";
+import "package:inventree/bluetooth_printer/bluetooth_printer_service.dart";
+import "package:inventree/bluetooth_printer/esc_pos_label.dart";
 
 /*
  * Widget for displaying detail view of a single PurchaseOrderLineItem
@@ -76,6 +78,38 @@ class _POLineDetailWidgetState extends RefreshableState<POLineDetailWidget> {
         );
       }
     }
+    buttons.add(
+      SpeedDialChild(
+        child: Icon(TablerIcons.printer),
+        label: L10().printToBluetooth,
+        onTap: () async {
+          final svc = BluetoothPrinterService.instance;
+          await svc.ensureConnected();
+          if (!svc.isConnected) {
+            showSnackIcon(L10().bluetoothPrinterSelectFirst, success: false);
+            return;
+          }
+          try {
+            showSnackIcon(L10().downloading, success: true);
+            String partName = widget.item.getString("full_name", subKey: "part_detail");
+            if (partName.isEmpty) {
+              partName = widget.item.SKU.isNotEmpty ? widget.item.SKU : "PO Line ${widget.item.pk}";
+            }
+            final bytes = await EscPosLabelBuilder.buildReceiveLabel(
+              partName: partName,
+              quantity: simpleNumberString(widget.item.quantity),
+              barcode: widget.item.customBarcode.isNotEmpty
+                  ? widget.item.customBarcode
+                  : "poline-${widget.item.pk}",
+            );
+            await svc.writeBytes(bytes);
+            showSnackIcon(L10().printLabelSuccess, success: true);
+          } catch (_) {
+            showSnackIcon(L10().printLabelFailure, success: false);
+          }
+        },
+      ),
+    );
 
     return buttons;
   }

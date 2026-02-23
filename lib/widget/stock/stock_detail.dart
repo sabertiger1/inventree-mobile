@@ -14,6 +14,8 @@ import "package:inventree/api.dart";
 import "package:inventree/api_form.dart";
 import "package:inventree/labels.dart";
 import "package:inventree/preferences.dart";
+import "package:inventree/bluetooth_printer/bluetooth_printer_service.dart";
+import "package:inventree/bluetooth_printer/esc_pos_label.dart";
 
 import "package:inventree/inventree/company.dart";
 import "package:inventree/inventree/stock.dart";
@@ -140,6 +142,36 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
         ),
       );
     }
+    actions.add(
+      SpeedDialChild(
+        child: Icon(TablerIcons.printer),
+        label: L10().printToBluetooth,
+        onTap: () async {
+          final svc = BluetoothPrinterService.instance;
+          await svc.ensureConnected();
+          if (!svc.isConnected) {
+            showSnackIcon(L10().bluetoothPrinterSelectFirst, success: false);
+            return;
+          }
+          try {
+            showSnackIcon(L10().downloading, success: true);
+            final bytes = await EscPosLabelBuilder.buildStockItemLabel(
+              partName: widget.item.partName,
+              quantityOrSerial: widget.item.displayQuantity,
+              location: widget.item.locationPathString,
+              barcode: widget.item.customBarcode.isNotEmpty
+                  ? widget.item.customBarcode
+                  : "stockitem-${widget.item.pk}",
+            );
+            await svc.writeBytes(bytes);
+            showSnackIcon(L10().printLabelSuccess, success: true);
+          } catch (_) {
+            showSnackIcon(L10().printLabelFailure, success: false);
+          }
+        },
+      ),
+    );
+
     if (widget.item.canDelete) {
       actions.add(
         SpeedDialChild(
