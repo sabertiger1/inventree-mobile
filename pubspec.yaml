@@ -43,7 +43,8 @@ dependencies:
   sentry_flutter: 8.14.2                     # Error reporting
   url_launcher: ^6.3.1                    # Open link in system browser
   wakelock_plus: ^1.3.2                   # Prevent device from sleeping
-  esc_pos_bluetooth_updated: ^0.5.0       # Bluetooth ESC/POS label printing
+  # Bluetooth ESC/POS: esc_pos_bluetooth_updated 依赖的 flutter_bluetooth_basic_updated 在 CI 上插件注册失败，暂时移除；本地可后续换用其他插件恢复
+  # esc_pos_bluetooth_updated: ^0.5.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.1

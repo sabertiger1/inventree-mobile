@@ -9,7 +9,6 @@ import "package:inventree/l10.dart";
 import "package:inventree/settings/about.dart";
 import "package:inventree/settings/app_settings.dart";
 import "package:inventree/settings/barcode_settings.dart";
-import "package:inventree/settings/bluetooth_printer_settings.dart";
 import "package:inventree/settings/home_settings.dart";
 import "package:inventree/settings/select_server.dart";
 import "package:inventree/settings/part_settings.dart";
@@ -103,20 +102,6 @@ class _InvenTreeSettingsState extends State<InvenTreeSettingsWidget> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => InvenTreeBarcodeSettingsWidget(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              title: Text(L10().bluetoothPrinterSettings),
-              subtitle: Text(L10().labelPrintingDetail),
-              leading: Icon(TablerIcons.printer, color: COLOR_ACTION),
-              trailing: LinkIcon(),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BluetoothPrinterSettingsWidget(),
                   ),
                 );
               },
